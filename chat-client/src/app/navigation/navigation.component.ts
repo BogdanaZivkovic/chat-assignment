@@ -14,6 +14,6 @@ export class NavigationComponent implements OnInit {
   }
 
   signOut() {
-    this.userService.signOut();
+    this.userService.signOut().subscribe();
   }
 }

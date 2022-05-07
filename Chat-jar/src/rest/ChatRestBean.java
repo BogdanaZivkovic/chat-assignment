@@ -45,5 +45,24 @@ public class ChatRestBean implements ChatRest {
 		
 		messageManager.post(message);
 	}
+	
+	@Override
+	public void getRegisteredUsers() {
+		AgentMessage message = new AgentMessage();
+		message.userArgs.put("receiver", "chat");
+		message.userArgs.put("command", "GET_REGISTERED");
+		
+		messageManager.post(message);
+	}
+
+	@Override
+	public void logout(String username) {
+		AgentMessage message = new AgentMessage();
+		message.userArgs.put("receiver", "chat");
+		message.userArgs.put("command", "LOG_OUT");
+		message.userArgs.put("username", username);
+		
+		messageManager.post(message);
+	}
 
 }

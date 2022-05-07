@@ -9,7 +9,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let user of sortedUsers">
+                    <tr *ngFor="let user of userService.registeredUsers">
                         <td>{{user.username}}</td>
                     </tr>
                 </tbody>

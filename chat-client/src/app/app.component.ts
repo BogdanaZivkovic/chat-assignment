@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { User } from './model/user';
 import { UserService } from './service/user.service';
 
@@ -11,13 +12,13 @@ export class AppComponent implements OnInit {
   
   title = 'chat-client';
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router : Router) {}
 
   ngOnInit(): void {
-    this.initSocket(this.userService);
+    this.initSocket(this.userService, this.router);
   }
   
-  initSocket(userService: UserService) {
+  initSocket(userService: UserService, router: Router) {
     let connection: WebSocket|null = new WebSocket("ws://localhost:8080/Chat-war/ws/chat"); // 'chat' should be individual person's username
 
     connection.onopen = function () {
@@ -33,8 +34,10 @@ export class AppComponent implements OnInit {
 
       if(data[0] == "LOG_IN" && data[1].includes("Yes")) { 
         
-        userService.isSignedIn = true; 
+        userService.isSignedIn = true;
+        userService.username = data[2];
         console.log(userService.isSignedIn);
+        router.navigate(['signed-in-users']);
       }
       else if(data[0] == "REGISTER") {
         alert(data[1]);
@@ -48,6 +51,16 @@ export class AppComponent implements OnInit {
           }
        });    
        userService.setLoggedInUsers(users);   
+      }
+      else if(data[0] == "REGISTERED") {
+        let users: User[] = [];
+        data[1].split("|").forEach((user: string) => {
+          if (user) {
+            let userData = user.split(",");   
+            users.push(new User(userData[0], userData[1]))
+          }
+       });    
+       userService.setRegisteredUsers(users);   
       }
       else {
         alert(data[1]);

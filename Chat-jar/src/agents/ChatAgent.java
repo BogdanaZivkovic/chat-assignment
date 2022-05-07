@@ -70,8 +70,8 @@ public class ChatAgent implements Agent {
 						username = (String) tmsg.getObjectProperty("username");
 						password = (String) tmsg.getObjectProperty("password");
 						result = chatManager.login(username, password);
-
-						response = "LOG_IN!Logged in: " + (result ? "Yes!" : "No!");
+						
+						response = "LOG_IN!Logged in: " + (result ? "Yes!" : "No!") + username;
 						break;
 					case "GET_LOGGEDIN":
 						response = "LOGGEDIN!";
@@ -80,6 +80,21 @@ public class ChatAgent implements Agent {
 							response += u.toString() + "|";
 						}
 
+						break;
+					case "GET_REGISTERED":
+						response = "REGISTERED!";
+						users = chatManager.registeredUsers();
+						for (User u : users) {
+							response += u.toString() + "|";
+						}
+
+						break;
+					case "LOG_OUT":
+						username = (String) tmsg.getObjectProperty("username");
+						result = chatManager.logout(username);
+
+						response = "LOG OUT!Logged out: " + (result ? "Yes!" : "No!");
+						
 						break;
 					case "x":
 						break;
