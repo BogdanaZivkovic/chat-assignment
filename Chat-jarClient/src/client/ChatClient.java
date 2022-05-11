@@ -9,7 +9,7 @@ public class ChatClient {
 	private AgentManagerRemote agentManager = JNDILookup.lookUp(JNDILookup.AgentManagerLookup, AgentManagerBean.class);
 
 	public void postConstruct() {
-		agentManager.startAgent(JNDILookup.ChatAgentLookup);
+		agentManager.startAgent(JNDILookup.ChatAgentLookup, "chat");
 	}
 
 	public ChatClient() {

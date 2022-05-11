@@ -115,8 +115,8 @@ public class ChatAgent implements Agent {
 	}
 
 	@Override
-	public String init() {
-		agentId = "chat";
+	public String init(String agentId) {
+		this.agentId = agentId;
 		cachedAgents.addRunningAgent(agentId, this);
 		return agentId;
 	}

@@ -1,5 +1,6 @@
 package agents;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +10,10 @@ import javax.ejb.Stateful;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
+
+import chatmanager.ChatManagerRemote;
+import models.User;
+import ws.WSChat;
 /**
  * Sledece nedelje cemo prebaciti poruke koje krajnji korisnik treba da vidi da se 
  * salju preko Web Socketa na front-end (klijentski deo aplikacije)
@@ -24,9 +29,15 @@ public class UserAgent implements Agent {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String agentId;
+	
 	@EJB
 	private CachedAgentsRemote cachedAgents;
+	@EJB
+	private ChatManagerRemote chatManager;
+	@EJB
+	private WSChat ws;
 
+	
 	@PostConstruct
 	public void postConstruct() {
 		System.out.println("Created User Agent!");
@@ -37,14 +48,23 @@ public class UserAgent implements Agent {
 		TextMessage tmsg = (TextMessage) msg;
 		String receiver;
 		String sender;
-		String message;
+		String content;
+		String subject;
+		String response;
 		try {
 			receiver = (String) tmsg.getObjectProperty("receiver");
 			sender = (String) tmsg.getObjectProperty("sender");
-			message = (String) tmsg.getObjectProperty("message");
+			content = (String) tmsg.getObjectProperty("content");
+			subject = (String) tmsg.getObjectProperty("subject");
 			if (receiver.equals(agentId)) {
-				System.out.println("Received from :" + sender);
-				System.out.println("Message : " + message);
+				System.out.println("Received from: " + sender);
+				System.out.println("Subject: " + subject);
+				System.out.println("Content: " + content);
+				
+				boolean result = chatManager.sendMessage(new models.Message(new User(receiver, null), new User(sender, null), LocalDateTime.now(), subject, content));
+
+				response = "MESSAGE_USER!" + sender;
+				ws.onMessage(receiver, response);
 			}
 		} catch (JMSException e) {
 			e.printStackTrace();
@@ -52,8 +72,8 @@ public class UserAgent implements Agent {
 	}
 
 	@Override
-	public String init() {
-		agentId = generateId();
+	public String init(String agentId) {
+		this.agentId = agentId;
 		cachedAgents.addRunningAgent(agentId, this);
 		return agentId;
 	}

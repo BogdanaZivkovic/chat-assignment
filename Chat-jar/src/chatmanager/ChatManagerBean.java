@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateful;
 
+import models.Message;
 import models.User;
 
 // TODO Implement the rest of Client-Server functionalities 
@@ -18,6 +19,7 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal {
 
 	private List<User> registered = new ArrayList<User>();
 	private List<User> loggedIn = new ArrayList<User>();
+	private List<Message> messages = new ArrayList<Message>();
 	
 	/**
 	 * Default constructor.
@@ -27,7 +29,11 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal {
 
 	@Override
 	public boolean register(User user) {
-		registered.add(user);
+		boolean exists = registered.stream().anyMatch(u->u.getUsername().equals(user.getUsername()));
+		if(exists) 
+			return false;
+		
+		registered.add(user); 
 		return true;
 	}
 
@@ -58,5 +64,10 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean sendMessage(Message message) {
+		return messages.add(message);
 	}
 }

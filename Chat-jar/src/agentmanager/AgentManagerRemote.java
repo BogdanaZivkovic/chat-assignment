@@ -6,6 +6,6 @@ import agents.Agent;
 
 @Remote
 public interface AgentManagerRemote {
-	public String startAgent(String name);
+	public String startAgent(String name, String agentId);
 	public Agent getAgentById(String agentId);
 }

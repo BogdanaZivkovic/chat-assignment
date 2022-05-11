@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { User } from '../model/user';
 
-const baseUrl = 'http://localhost:8080/Chat-war/api/chat/';
+const baseUrl = 'http://localhost:8080/Chat-war/api/users/';
 
 @Injectable({
   providedIn: 'root'

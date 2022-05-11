@@ -9,7 +9,7 @@ import messagemanager.MessageManagerRemote;
 import models.User;
 
 @Stateless
-@Path("/chat")
+@Path("/users")
 public class ChatRestBean implements ChatRest {
 
 	@EJB

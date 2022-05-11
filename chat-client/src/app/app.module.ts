@@ -46,6 +46,7 @@ import {MatTreeModule} from '@angular/material/tree';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {SignedInUsersComponent } from './signed-in-users/signed-in-users.component';
 import { HttpClientModule } from '@angular/common/http';
+import { MessageComponent } from './message/message.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { HttpClientModule } from '@angular/common/http';
     SignInComponent,
     NavigationComponent,
     RegisteredUsersComponent,
-    SignedInUsersComponent
+    SignedInUsersComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,

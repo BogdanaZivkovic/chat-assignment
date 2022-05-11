@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { MessageComponent } from './message/message.component';
 import { RegisteredUsersComponent } from './registered-users/registered-users.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { SignInComponent } from './sign-in/sign-in.component';
@@ -9,7 +10,8 @@ const routes: Routes = [
   { path: 'register', component: RegistrationComponent},
   { path: 'sign-in', component: SignInComponent},
   { path: 'registered-users', component: RegisteredUsersComponent},
-  { path: 'signed-in-users', component: SignedInUsersComponent}
+  { path: 'signed-in-users', component: SignedInUsersComponent},
+  { path: 'message', component: MessageComponent}
 ];
 
 @NgModule({
