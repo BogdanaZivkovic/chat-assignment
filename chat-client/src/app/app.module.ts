@@ -47,6 +47,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {SignedInUsersComponent } from './signed-in-users/signed-in-users.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MessageComponent } from './message/message.component';
+import { MessageAllComponent } from './message-all/message-all.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { MessageComponent } from './message/message.component';
     NavigationComponent,
     RegisteredUsersComponent,
     SignedInUsersComponent,
-    MessageComponent
+    MessageComponent,
+    MessageAllComponent
   ],
   imports: [
     BrowserModule,

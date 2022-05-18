@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { MessageAllComponent } from './message-all/message-all.component';
 import { MessageComponent } from './message/message.component';
 import { RegisteredUsersComponent } from './registered-users/registered-users.component';
 import { RegistrationComponent } from './registration/registration.component';
@@ -11,7 +12,8 @@ const routes: Routes = [
   { path: 'sign-in', component: SignInComponent},
   { path: 'registered-users', component: RegisteredUsersComponent},
   { path: 'signed-in-users', component: SignedInUsersComponent},
-  { path: 'message', component: MessageComponent}
+  { path: 'message', component: MessageComponent},
+  { path: 'message-all', component: MessageAllComponent}
 ];
 
 @NgModule({

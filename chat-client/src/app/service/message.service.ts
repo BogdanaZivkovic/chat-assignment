@@ -14,4 +14,8 @@ export class MessageService {
   sendMessage(message: Message) {
     return this.http.post(baseUrl + "user", message);
   }
+
+  sendMessageToAll(message: Message) {
+    return this.http.post(baseUrl + "all", message);
+  }
 }
