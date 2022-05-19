@@ -48,6 +48,7 @@ import {SignedInUsersComponent } from './signed-in-users/signed-in-users.compone
 import { HttpClientModule } from '@angular/common/http';
 import { MessageComponent } from './message/message.component';
 import { MessageAllComponent } from './message-all/message-all.component';
+import { MessagesComponent } from './messages/messages.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { MessageAllComponent } from './message-all/message-all.component';
     RegisteredUsersComponent,
     SignedInUsersComponent,
     MessageComponent,
-    MessageAllComponent
+    MessageAllComponent,
+    MessagesComponent
   ],
   imports: [
     BrowserModule,

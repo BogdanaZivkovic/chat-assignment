@@ -18,7 +18,7 @@ export class MessageAllComponent implements OnInit {
   }
 
   public onClickSubmit() {
-    //this.message.sender = new User(this.userService.username, "");
+    this.message.sender = this.userService.user;
     this.messageService.sendMessageToAll(this.message).subscribe();
   }
   

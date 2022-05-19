@@ -33,5 +33,8 @@ public class AgentManagerBean implements AgentManagerRemote {
 		return cachedAgents.getRunningAgents().get(agentId);
 	}
 
-
+	@Override
+	public void stopAgent(String agentId) {
+		cachedAgents.getRunningAgents().remove(agentId);
+	}
 }

@@ -1,7 +1,8 @@
 package agents;
 
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -12,14 +13,10 @@ import javax.jms.Message;
 import javax.jms.TextMessage;
 
 import chatmanager.ChatManagerRemote;
+import messagesrepo.MessagesRepoRemote;
 import models.User;
 import ws.WSChat;
-/**
- * Sledece nedelje cemo prebaciti poruke koje krajnji korisnik treba da vidi da se 
- * salju preko Web Socketa na front-end (klijentski deo aplikacije)
- * @author Aleksandra
- *
- */
+
 @Stateful
 @Remote(Agent.class)
 public class UserAgent implements Agent {
@@ -33,6 +30,10 @@ public class UserAgent implements Agent {
 	@EJB
 	private CachedAgentsRemote cachedAgents;
 	@EJB
+	private ChatManagerRemote chatManager;
+	@EJB
+	private MessagesRepoRemote messagesRepo;
+	@EJB
 	private WSChat ws;
 
 	
@@ -42,25 +43,59 @@ public class UserAgent implements Agent {
 	}
 	
 	@Override
-	public void handleMessage(Message msg) {
-		TextMessage tmsg = (TextMessage) msg;
+	public void handleMessage(Message message) {
+		TextMessage tmsg = (TextMessage) message;
+
 		String receiver;
-		String sender;
-		String content;
-		String subject;
-		String response;
 		try {
 			receiver = (String) tmsg.getObjectProperty("receiver");
-			sender = (String) tmsg.getObjectProperty("sender");
-			content = (String) tmsg.getObjectProperty("content");
-			subject = (String) tmsg.getObjectProperty("subject");
-			if (receiver.equals(agentId)) {
-				System.out.println("Received from: " + sender);
-				System.out.println("Subject: " + subject);
-				System.out.println("Content: " + content);
+			if (agentId.equals(receiver)) {
+				String option = "";
+				String response = "";
+				try {
+					option = (String) tmsg.getObjectProperty("command");
+					switch (option) {
+					case "GET_LOGGEDIN":
+						response = "LOGGEDIN!";
+						List<User> users = chatManager.loggedInUsers();
+						for (User u : users) {
+							response += u.toString() + "|";
+						}
 
-				response = "MESSAGE_USER!" + sender;
-				ws.onMessage(receiver, response);
+						break;
+					case "GET_REGISTERED":
+						response = "REGISTERED!";
+						users = chatManager.registeredUsers();
+						for (User u : users) {
+							response += u.toString() + "|";
+						}
+
+						break;
+					case "MESSAGE":
+						response = "MESSAGE!";
+						String sender = (String) tmsg.getObjectProperty("sender");
+						String subject = (String) tmsg.getObjectProperty("subject");
+						String content = (String) tmsg.getObjectProperty("content");
+						models.Message msg = new models.Message(new User(receiver, ""), new User(sender, ""), LocalDateTime.now(), subject, content);
+						messagesRepo.addMessage(msg);
+						response += msg.toString();
+						break;
+					case "GET_MESSAGES":
+						response = "MESSAGES!";
+						for(models.Message m : messagesRepo.getMessages()) {
+							response += m.toString() + "|";
+						}
+						break;
+					default:
+						response = "ERROR!Option: " + option + " does not exist.";
+						break;
+					}
+					System.out.println(response);
+					ws.onMessage(agentId, response);
+					
+				} catch (JMSException e) {
+					e.printStackTrace();
+				}
 			}
 		} catch (JMSException e) {
 			e.printStackTrace();
@@ -72,13 +107,6 @@ public class UserAgent implements Agent {
 		this.agentId = agentId;
 		cachedAgents.addRunningAgent(agentId, this);
 		return agentId;
-	}
-
-	private String generateId() {
-		Random r = new Random();
-		int low = 10;
-		int high = 100;
-		return Integer.toString(r.nextInt(high - low) + low);
 	}
 
 	@Override

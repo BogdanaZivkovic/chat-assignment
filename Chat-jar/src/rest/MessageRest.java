@@ -16,7 +16,7 @@ public interface MessageRest {
 	@POST
 	@Path("/all")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void sendMessageToAll();
+	public void sendMessageToAll(Message message);
 	
 	@POST
 	@Path("/user")

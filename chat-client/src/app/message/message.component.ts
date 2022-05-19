@@ -21,7 +21,7 @@ export class MessageComponent implements OnInit {
   }
 
   public onClickSubmit() {
-    //this.message.sender = new User(this.userService.username, "");
+    this.message.sender = this.userService.user;
     this.messageService.sendMessage(this.message).subscribe();
   }
 }
