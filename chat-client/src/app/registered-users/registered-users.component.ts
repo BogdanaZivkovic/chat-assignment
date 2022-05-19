@@ -13,7 +13,7 @@ export class RegisteredUsersComponent implements OnInit {
   constructor(public userService : UserService) { }
 
   ngOnInit(): void {
-    this.userService.getRegisteredUsers().subscribe();
+    this.userService.getRegisteredUsers();
   }
 
   sortData(sort: Sort) {

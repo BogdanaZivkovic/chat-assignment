@@ -9,11 +9,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 
 import models.Message;
-import models.User;
 
 @Remote
 public interface MessageRest {
-	
 	
 	@POST
 	@Path("/all")

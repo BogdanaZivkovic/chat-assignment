@@ -33,8 +33,6 @@ public class UserAgent implements Agent {
 	@EJB
 	private CachedAgentsRemote cachedAgents;
 	@EJB
-	private ChatManagerRemote chatManager;
-	@EJB
 	private WSChat ws;
 
 	
@@ -60,8 +58,6 @@ public class UserAgent implements Agent {
 				System.out.println("Received from: " + sender);
 				System.out.println("Subject: " + subject);
 				System.out.println("Content: " + content);
-				
-				boolean result = chatManager.sendMessage(new models.Message(new User(receiver, null), new User(sender, null), LocalDateTime.now(), subject, content));
 
 				response = "MESSAGE_USER!" + sender;
 				ws.onMessage(receiver, response);

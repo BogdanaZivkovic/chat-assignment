@@ -13,7 +13,7 @@ export class SignedInUsersComponent implements OnInit {
   constructor(public userService : UserService) { }
 
   ngOnInit(): void {
-    this.userService.getLoggedInUsers().subscribe();
+    this.userService.getLoggedInUsers();
   }
 
   sortData(sort: Sort) {

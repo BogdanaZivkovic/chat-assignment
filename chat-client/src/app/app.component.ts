@@ -1,25 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { User } from './model/user';
-import { UserService } from './service/user.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   
   title = 'chat-client';
 
-  constructor(private userService: UserService, private router : Router) {}
-
-  ngOnInit(): void {
-    initSocket(this.userService, this.router);
-  }
+  constructor() {}
 }
 
-function initSocket(userService: UserService, router: Router) {
+/*function initSocket(userService: UserService, router: Router) {
   let connection: WebSocket|null = new WebSocket("ws://localhost:8080/Chat-war/ws/chat"); // 'chat' should be individual person's username
 
   connection.onopen = function () {
@@ -85,5 +78,5 @@ function initUserSocket(username: string) {
       const data = msg.data.split("!");
       alert(data[1]);
   }
-}
+}*/
 

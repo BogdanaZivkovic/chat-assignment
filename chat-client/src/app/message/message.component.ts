@@ -17,11 +17,11 @@ export class MessageComponent implements OnInit {
   constructor(private messageService : MessageService, public userService : UserService) { }
 
   ngOnInit(): void { 
-    this.userService.getRegisteredUsers().subscribe();
+    this.userService.getRegisteredUsers();
   }
 
   public onClickSubmit() {
-    this.message.sender = new User(this.userService.username, "");
+    //this.message.sender = new User(this.userService.username, "");
     this.messageService.sendMessage(this.message).subscribe();
   }
 }

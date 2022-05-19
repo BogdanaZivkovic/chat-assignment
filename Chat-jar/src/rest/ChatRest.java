@@ -7,7 +7,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import models.User;
 
@@ -16,23 +18,23 @@ public interface ChatRest {
 	@POST
 	@Path("/register")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void register(User user);
+	public Response register(User user);
 	
 	@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void login(User user);
+	public Response login(User user);
 	
 	@GET
 	@Path("/loggedIn")
-	public void getloggedInUsers();
+	public Response getloggedInUsers();
 	
 	@GET
 	@Path("/registered")
-	public void getRegisteredUsers();
+	public Response getRegisteredUsers();
 	
 	@DELETE
 	@Path("/loggedIn/{user}")
-	public void logout(@PathParam("user") String username);
+	public Response logout(@PathParam("user") String username);
 	
 }

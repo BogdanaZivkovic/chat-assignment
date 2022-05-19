@@ -47,7 +47,7 @@ public class ChatAgent implements Agent {
 
 	@Override
 	public void handleMessage(Message message) {
-		TextMessage tmsg = (TextMessage) message;
+		/*TextMessage tmsg = (TextMessage) message;
 
 		String receiver;
 		try {
@@ -111,7 +111,7 @@ public class ChatAgent implements Agent {
 			}
 		} catch (JMSException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	@Override

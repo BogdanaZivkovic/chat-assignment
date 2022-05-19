@@ -17,7 +17,7 @@ export class RegistrationComponent implements OnInit {
   }
 
   onSubmit() {
-    this.userService.register(this.model).subscribe();
+    this.userService.register(this.model);
     console.log(this.model);
   }
 }

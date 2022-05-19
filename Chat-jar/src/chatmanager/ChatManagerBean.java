@@ -4,22 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
-import javax.ejb.Stateful;
+import javax.ejb.Singleton;
 
-import models.Message;
 import models.User;
 
 // TODO Implement the rest of Client-Server functionalities 
 /**
  * Session Bean implementation class ChatBean
  */
-@Stateful
+@Singleton
 @LocalBean
-public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal {
+public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 
+	/**
+	 * 
+	 */
 	private List<User> registered = new ArrayList<User>();
 	private List<User> loggedIn = new ArrayList<User>();
-	private List<Message> messages = new ArrayList<Message>();
 	
 	/**
 	 * Default constructor.
@@ -28,21 +29,26 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal {
 	}
 
 	@Override
-	public boolean register(User user) {
+	public User register(User user) {
 		boolean exists = registered.stream().anyMatch(u->u.getUsername().equals(user.getUsername()));
 		if(exists) 
-			return false;
+			return null;
 		
 		registered.add(user); 
-		return true;
+		return user;
 	}
 
 	@Override
-	public boolean login(String username, String password) {
-		boolean exists = registered.stream().anyMatch(u->u.getUsername().equals(username) && u.getPassword().equals(password));
-		if(exists)
-			loggedIn.add(new User(username, password));
-		return exists;
+	public boolean login(User user) {
+		boolean exists = registered.stream().anyMatch(u->u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword()));
+		//boolean alreadyLoggedIn = loggedIn.stream().anyMatch(u->u.getUsername().equals(username) && u.getPassword().equals(password));
+		if(!exists) {
+			return false;
+		}
+		else {
+			loggedIn.add(user);
+			return true;
+		}
 	}
 
 	@Override
@@ -64,10 +70,5 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal {
 			}
 		}
 		return false;
-	}
-	
-	@Override
-	public boolean sendMessage(Message message) {
-		return messages.add(message);
 	}
 }

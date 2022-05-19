@@ -19,6 +19,6 @@ export class SignInComponent implements OnInit {
 
   onSubmit() {
     console.log(this.model);
-    this.userService.signIn(this.model).subscribe();
+    this.userService.signIn(this.model);
   }
 }

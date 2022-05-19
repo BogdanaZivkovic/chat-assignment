@@ -17,24 +17,17 @@ public class MessageRestBean implements MessageRest{
 	@EJB
 	private MessageManagerRemote messageManager;
 	
-	@EJB
-	private AgentManagerRemote agentManager;
-	
 	@Override
-	public void sendMessageToAll() {
-		
-		
+	public void sendMessageToAll() {	
 	}
 
 	@Override
 	public void sendMessageToUser(Message message) {
 		AgentMessage agentMessage = new AgentMessage();
-		agentManager.startAgent(JNDILookup.UserAgentLookup, message.getReceiver().getUsername());
 		agentMessage.userArgs.put("receiver", message.getReceiver().getUsername());
 		agentMessage.userArgs.put("sender", message.getSender().getUsername());
 		agentMessage.userArgs.put("subject", message.getSubject());
-		agentMessage.userArgs.put("content", message.getContent());
-		
+		agentMessage.userArgs.put("content", message.getContent());	
 		messageManager.post(agentMessage);				
 	}
 
