@@ -13,6 +13,7 @@ import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
+import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.management.AttributeNotFoundException;
@@ -150,13 +151,57 @@ public class ConnectionManagerBean implements ConnectionManager{
 	
 	@PreDestroy
 	private void shutDown() {
-		
-		for (String node: connectedNodes) {
+		notifyAllToShutDownNode(localNode.getAlias());
+	}	
+	
+	private void notifyAllToShutDownNode(String alias) {
+		for (String cn: connectedNodes) {
 			ResteasyClient client = new ResteasyClientBuilder().build();
-			ResteasyWebTarget rtarget = client.target("http://" + node + "/Chat-war/api/connection");
+			ResteasyWebTarget rtarget = client.target("http://" + cn + "/Chat-war/api/connection");
 			ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
 			rest.deleteNode(localNode.getAlias());
 			client.close();	
 		}
-	}	
+	}
+	
+	@Schedule(hour = "*", minute="*", second="*/60")
+	private void heartbeat() {
+		System.out.println("Heartbeat protocol");
+		for(String cn : connectedNodes) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					boolean nodeAlive = isNodeAlive(cn);
+					if(!nodeAlive) {
+						System.out.println("Deleting unresponsive node" + cn);
+						connectedNodes.remove(cn);
+						notifyAllToShutDownNode(cn);
+					}
+				}
+			}).start();
+		}
+	}
+	
+	private boolean isNodeAlive(String nodeAlias) {
+		
+		int pingTriesCount = 2;
+		boolean nodeAlive = false;
+		
+		for(int i=0; i <pingTriesCount; i++) {
+			try {
+				ResteasyClient client = new ResteasyClientBuilder().build();
+				ResteasyWebTarget rtarget = client.target("http://" + nodeAlias + "/Chat-war/api/connection");
+				ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
+				String response = rest.pingNode();
+				client.close();
+				if(response.equals("Ok")) {
+					nodeAlive = true;
+					break;
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		return nodeAlive;
+	}
 }
