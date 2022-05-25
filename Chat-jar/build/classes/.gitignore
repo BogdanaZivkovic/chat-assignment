@@ -1,6 +1,3 @@
-/chatmanager/
-/rest/
-/agents/
-/agentmanager/
+/util/
+/connnectionmanager/
 /models/
-/messagesrepo/
