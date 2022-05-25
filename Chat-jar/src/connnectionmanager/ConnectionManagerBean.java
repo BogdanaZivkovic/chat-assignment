@@ -48,22 +48,20 @@ public class ConnectionManagerBean implements ConnectionManager{
 	
 	@PostConstruct
 	private void init() {
-		try {
+		try {	
+			String address = getNodeAddress();
+			String alias = System.getProperty("jboss.node.name") + ":8080";
+			String master = getMaster() + ":8080"; 
 			
-			localNode.setAddress(getNodeAddress());
-			localNode.setAlias(getNodeAlias() + ":8080");
-			localNode.setMaster(getMaster() + ":8080");
-			
-			String master = localNode.getMaster();
-			
-			System.out.println(("MASTER ADDR: " + getMaster() + ", node name: " + getNodeAlias() + ", node address: " + getNodeAddress()));
-			if (master != null && !master.equals("")) {
+			System.out.println(("MASTER ADDR: " + master + ", node name: " + alias + ", node address: " + address));
+			if (master != null && !master.equals(":8080")) {
 				ResteasyClient client = new ResteasyClientBuilder().build();
 				ResteasyWebTarget rtarget = client.target("http://" + master + "/Chat-war/api/connection");
 				ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
-				connectedNodes = rest.registerNode(localNode.getAlias());
-				connectedNodes.remove(localNode.getAlias());
-				connectedNodes.add(localNode.getMaster());
+				connectedNodes = rest.registerNode(alias);
+				connectedNodes.remove(alias);
+				connectedNodes.add(master);
+				System.out.println("Handshake successful. Connected nodes: " + connectedNodes);
 			}
 
 		} catch (Exception e) {
@@ -71,18 +69,20 @@ public class ConnectionManagerBean implements ConnectionManager{
 		}
 	}
 	
+	
 	@Override
-	public List<String> registerNode(String nodeAlias) {
-		//LOG.info("New node registered: " + connection);
+	public List<String> registerNode(String connection) {
+		System.out.println("New node registered: " + connection);
 		for (String c : connectedNodes) {
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget rtarget = client.target("http://" + c + "/Chat-war/api/connection");
 			ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
-			rest.registerNode(nodeAlias);
+			rest.addNode(connection);
 		}
-		connectedNodes.add(nodeAlias);
+		connectedNodes.add(connection);
 		return connectedNodes;
 	}
+	
 	
 	@Override
 	public void addNode(String nodeAlias) {
@@ -113,13 +113,10 @@ public class ConnectionManagerBean implements ConnectionManager{
 		
 	}
 	
-	private String getNodeAlias() {
-		return System.getProperty("jboss.node.name");
-	}
 	
 	private String getMaster() {
 		try {
-			File f = FileUtils.getFile(ConnectionManager.class, "", "connection.properties");
+			File f = FileUtils.getFile(ConnectionManager.class, "", "connections.properties");
 			FileInputStream fileInput = new FileInputStream(f);
 			Properties properties = new Properties();
 			properties.load(fileInput);

@@ -11,10 +11,11 @@ public class Host implements Serializable {
 	
 	public Host() { }
 	
-	public Host(String address, String alias) {
+	public Host(String address, String alias, String master) {
 		super();
 		this.address = address;
 		this.alias = alias;
+		this.master = master;
 	}
 
 	public String getAddress() {
