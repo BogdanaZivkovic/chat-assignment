@@ -12,6 +12,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import models.User;
+
 public interface ConnectionManager {
 	@POST
 	@Path("/register")
@@ -24,9 +26,19 @@ public interface ConnectionManager {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void addNode(String nodeAlias);
 	
+	@POST
+	@Path("/nodes")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> getNodes();
+	
+	@POST
+	@Path("/users/loggedIn")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<User> getUsers();
+	
 	@DELETE
 	@Path("/node/{alias}")
-	public void deleteNode(@PathParam("alias") String alias);
+	public void deleteNode(@PathParam("alias") String nodeAlias);
 	
 	@GET
 	@Path("/node")

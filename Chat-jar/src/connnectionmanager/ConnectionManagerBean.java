@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Remote;
@@ -29,6 +30,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import chatmanager.ChatManagerRemote;
 import models.Host;
+import models.User;
 import util.FileUtils;
 import ws.WSChat;
 
@@ -39,7 +41,7 @@ import ws.WSChat;
 @Path("/connection")
 public class ConnectionManagerBean implements ConnectionManager{
 
-	private Host localNode;
+	private Host localNode = new Host();
 	private List<String> connectedNodes = new ArrayList<String>();
 	
 	@EJB ChatManagerRemote chatManager;
@@ -52,6 +54,10 @@ public class ConnectionManagerBean implements ConnectionManager{
 			String address = getNodeAddress();
 			String alias = System.getProperty("jboss.node.name") + ":8080";
 			String master = getMaster() + ":8080"; 
+			
+			localNode.setAddress(address);
+			localNode.setAlias(alias);
+			localNode.setMaster(master);
 			
 			System.out.println(("MASTER ADDR: " + master + ", node name: " + alias + ", node address: " + address));
 			if (master != null && !master.equals(":8080")) {
@@ -86,13 +92,14 @@ public class ConnectionManagerBean implements ConnectionManager{
 	
 	@Override
 	public void addNode(String nodeAlias) {
+		System.out.println("Added node: " + nodeAlias);
 		connectedNodes.add(nodeAlias);	
 	}
 	
 	@Override
-	public void deleteNode(String alias) {
-		// TODO Auto-generated method stub
-		
+	public void deleteNode(String nodeAlias) {
+		System.out.println("Deleted node: " + nodeAlias);		
+		connectedNodes.remove(nodeAlias);		
 	}
 	
 	@Override
@@ -126,5 +133,30 @@ public class ConnectionManagerBean implements ConnectionManager{
 			e.printStackTrace();
 			return null;
 		}
-	}			
+	}
+
+
+	@Override
+	public List<String> getNodes() {
+		return connectedNodes;
+	}
+
+
+	@Override
+	public List<User> getUsers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@PreDestroy
+	private void shutDown() {
+		
+		for (String node: connectedNodes) {
+			ResteasyClient client = new ResteasyClientBuilder().build();
+			ResteasyWebTarget rtarget = client.target("http://" + node + "/Chat-war/api/connection");
+			ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
+			rest.deleteNode(localNode.getAlias());
+			client.close();	
+		}
+	}	
 }
