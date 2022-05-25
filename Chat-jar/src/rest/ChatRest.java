@@ -4,6 +4,7 @@ import javax.ejb.Remote;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,11 +28,11 @@ public interface ChatRest {
 	
 	@GET
 	@Path("/loggedIn")
-	public Response getloggedInUsers();
+	public void getloggedInUsers(@HeaderParam("Authorization") String username);
 	
 	@GET
 	@Path("/registered")
-	public Response getRegisteredUsers();
+	public void getRegisteredUsers(@HeaderParam("Authorization") String username);
 	
 	@DELETE
 	@Path("/loggedIn/{user}")
