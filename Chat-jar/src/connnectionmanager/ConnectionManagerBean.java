@@ -52,7 +52,7 @@ public class ConnectionManagerBean implements ConnectionManager{
 			
 			localNode.setAddress(getNodeAddress());
 			localNode.setAlias(getNodeAlias() + ":8080");
-			localNode.setMaster(getMaster());
+			localNode.setMaster(getMaster() + ":8080");
 			
 			String master = localNode.getMaster();
 			
