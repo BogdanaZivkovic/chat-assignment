@@ -56,7 +56,7 @@ public class ConnectionManagerBean implements ConnectionManager{
 			
 			String master = localNode.getMaster();
 			
-			//LOG.info("MASTER ADDR: " + getMaster() + ", node name: " + getNodeAlias() + ", node address: " + getNodeAddress());
+			System.out.println(("MASTER ADDR: " + getMaster() + ", node name: " + getNodeAlias() + ", node address: " + getNodeAddress()));
 			if (master != null && !master.equals("")) {
 				ResteasyClient client = new ResteasyClientBuilder().build();
 				ResteasyWebTarget rtarget = client.target("http://" + master + "/Chat-war/api/connection");
