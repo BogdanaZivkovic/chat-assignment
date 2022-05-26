@@ -12,7 +12,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import models.Host;
 import models.User;
 
 public interface ConnectionManager {
@@ -45,4 +44,28 @@ public interface ConnectionManager {
 	@Path("/node")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String pingNode();
+	
+	@POST
+	@Path("/node/login")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void loginNotifyNodes();
+	
+	@POST
+	@Path("/node/register")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void registerNotifyNodes();
+
+	@POST
+	@Path("/users/loggedIn")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void loggedInForNodes(List<User> users);
+
+	@POST
+	@Path("/users/registered")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void registeredForNodes(List<User> users);
 }

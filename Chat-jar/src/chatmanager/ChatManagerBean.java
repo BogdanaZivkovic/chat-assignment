@@ -4,6 +4,7 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.management.AttributeNotFoundException;
@@ -14,6 +15,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
+import connnectionmanager.ConnectionManager;
 import models.Host;
 import models.User;
 
@@ -28,7 +30,7 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 	private List<User> registered = new ArrayList<User>();
 	private List<User> loggedIn = new ArrayList<User>();
 	
-	
+	@EJB ConnectionManager connectionManager;
 	
 	public ChatManagerBean() {
 	}
@@ -40,19 +42,20 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 			return null;
 		
 		registered.add(user); 
+		connectionManager.registerNotifyNodes();
 		return user;
 	}
 
 	@Override
 	public boolean login(User user) {
 		boolean exists = registered.stream().anyMatch(u->u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword()));
-		//boolean alreadyLoggedIn = loggedIn.stream().anyMatch(u->u.getUsername().equals(username) && u.getPassword().equals(password));
 		if(!exists) {
 			return false;
 		}
 		else {
 			user.setHost(getUserHost());
 			loggedIn.add(user);
+			connectionManager.loginNotifyNodes();
 			return true;
 		}
 	}
@@ -72,6 +75,7 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 		for(User user : loggedIn) {
 			if (user.getUsername().equals(username)) {
 				loggedIn.remove(user);
+				connectionManager.loginNotifyNodes();
 				return true;
 			}
 		}
@@ -91,5 +95,25 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 		}	
 		
 		return new Host(hostAlias, hostAddress);
+	}
+
+	@Override
+	public void setLoggedIn(List<User> users) {
+		loggedIn = users;
+	}
+
+	@Override
+	public void setRegistered(List<User> users) {
+		registered = users;
+	}
+
+	@Override
+	public User findByUsername(String username) {
+		for(User user : loggedIn) {
+			if(user.getUsername().equals(username)) {
+				return user;
+			}
+		}
+		return null;
 	}
 }

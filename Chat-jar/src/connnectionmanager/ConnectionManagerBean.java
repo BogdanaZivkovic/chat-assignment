@@ -30,6 +30,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import chatmanager.ChatManagerRemote;
+import messagemanager.AgentMessage;
+import messagemanager.MessageManagerRemote;
 import models.Host;
 import models.User;
 import util.FileUtils;
@@ -46,6 +48,8 @@ public class ConnectionManagerBean implements ConnectionManager{
 	private List<String> connectedNodes = new ArrayList<String>();
 	
 	@EJB ChatManagerRemote chatManager;
+	
+	@EJB MessageManagerRemote messageManager;
 	
 	@EJB WSChat ws;
 	
@@ -75,20 +79,31 @@ public class ConnectionManagerBean implements ConnectionManager{
 		}
 	}
 	
-	
 	@Override
-	public List<String> registerNode(String connection) {
-		System.out.println("New node registered: " + connection);
+	public List<String> registerNode(String nodeAlias) {
+		System.out.println("New node registered: " + nodeAlias);
 		for (String c : connectedNodes) {
 			ResteasyClient client = new ResteasyClientBuilder().build();
 			ResteasyWebTarget rtarget = client.target("http://" + c + "/Chat-war/api/connection");
 			ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
-			rest.addNode(connection);
+			rest.addNode(nodeAlias);
 		}
-		connectedNodes.add(connection);
+		connectedNodes.add(nodeAlias);
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
+				ResteasyWebTarget rtarget = resteasyClient.target("http://"  + nodeAlias + "/Chat-war/api/connection");
+				ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
+				rest.loggedInForNodes(chatManager.loggedInUsers());
+				rest.registeredForNodes(chatManager.registeredUsers());
+				resteasyClient.close();
+			}
+		}).start();
+		
 		return connectedNodes;
 	}
-	
 	
 	@Override
 	public void addNode(String nodeAlias) {
@@ -119,7 +134,6 @@ public class ConnectionManagerBean implements ConnectionManager{
 		}
 		
 	}
-	
 	
 	private String getMaster() {
 		try {
@@ -206,5 +220,61 @@ public class ConnectionManagerBean implements ConnectionManager{
 	
 	public String getNodeName() {
 		return localNode.getAlias();
+	}
+
+
+	@Override
+	public void loginNotifyNodes() {
+		for (String cn: connectedNodes) {
+			ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
+			ResteasyWebTarget rtarget = resteasyClient.target("http://" + cn + "/Chat-war/api/connection");
+			ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
+			rest.loggedInForNodes(chatManager.loggedInUsers());
+			resteasyClient.close();
+		}	
+	}
+
+
+	@Override
+	public void registerNotifyNodes() {
+		for (String cn: connectedNodes) {
+			ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
+			ResteasyWebTarget rtarget = resteasyClient.target("http://" + cn + "/Chat-war/api/connection");
+			ConnectionManager rest = rtarget.proxy(ConnectionManager.class);
+			rest.registeredForNodes(chatManager.registeredUsers());
+			resteasyClient.close();
+		}		
+	}
+
+
+	@Override
+	public void loggedInForNodes(List<User> users) {
+		chatManager.setLoggedIn(users);
+		for(User user : chatManager.loggedInUsers()) {
+			if(!user.getHost().getAlias().equals(localNode.getAlias())) {
+				continue;
+			}
+			AgentMessage message = new AgentMessage();
+			message.userArgs.put("receiver", user.getUsername());
+			message.userArgs.put("command", "GET_LOGGEDIN");
+			
+			messageManager.post(message);
+		}
+	}
+
+
+	@Override
+	public void registeredForNodes(List<User> users) {
+		chatManager.setRegistered(users);
+		for(User user : chatManager.loggedInUsers()) {
+			if(!user.getHost().getAlias().equals(localNode.getAlias())) {
+				continue;
+			}
+			AgentMessage message = new AgentMessage();
+			message.userArgs.put("receiver", user.getUsername());
+			message.userArgs.put("command", "GET_REGISTERED");
+			
+			messageManager.post(message);
+		}
 	}
 }

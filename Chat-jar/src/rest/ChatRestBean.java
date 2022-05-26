@@ -36,12 +36,12 @@ public class ChatRestBean implements ChatRest {
 		}
 
 		for (User loggedInUser : chatManager.loggedInUsers()) {
-			
-			AgentMessage message = new AgentMessage();
-			message.userArgs.put("receiver", loggedInUser.getUsername());
-			message.userArgs.put("command", "GET_REGISTERED");
-			
-			messageManager.post(message);
+			if(loggedInUser.getHost().getAlias().equals(System.getProperty("jboss.node.name") + ":8080")) {
+				AgentMessage message = new AgentMessage();
+				message.userArgs.put("receiver", loggedInUser.getUsername());
+				message.userArgs.put("command", "GET_REGISTERED");
+				messageManager.post(message);
+			}
 		}
 		return Response
 				.status(Response.Status.CREATED).entity("SUCCESS")
@@ -58,12 +58,12 @@ public class ChatRestBean implements ChatRest {
 		
 		agentManager.startAgent(JNDILookup.UserAgentLookup, user.getUsername());
 		for (User loggedInUser : chatManager.loggedInUsers()) {
-			
-			AgentMessage message = new AgentMessage();
-			message.userArgs.put("receiver", loggedInUser.getUsername());
-			message.userArgs.put("command", "GET_LOGGEDIN");
-			
-			messageManager.post(message);
+			if(loggedInUser.getHost().getAlias().equals(System.getProperty("jboss.node.name") + ":8080")) {		
+				AgentMessage message = new AgentMessage();
+				message.userArgs.put("receiver", loggedInUser.getUsername());
+				message.userArgs.put("command", "GET_LOGGEDIN");	
+				messageManager.post(message);
+			}
 		}
 		return Response
 				.status(Response.Status.OK).entity("SUCCESS")

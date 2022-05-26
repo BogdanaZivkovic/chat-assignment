@@ -1,7 +1,6 @@
 package agents;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +13,7 @@ import javax.jms.TextMessage;
 
 import chatmanager.ChatManagerRemote;
 import messagesrepo.MessagesRepoRemote;
+import models.Host;
 import models.User;
 import ws.WSChat;
 
@@ -76,9 +76,9 @@ public class UserAgent implements Agent {
 						String sender = (String) tmsg.getObjectProperty("sender");
 						String subject = (String) tmsg.getObjectProperty("subject");
 						String content = (String) tmsg.getObjectProperty("content");
-						//models.Message msg = new models.Message(new User(receiver, ""), new User(sender, ""), LocalDateTime.now(), subject, content);
-						//messagesRepo.addMessage(msg);
-						//response += msg.toString();
+						models.Message msg = new models.Message(new User(receiver, "", new Host()), new User(sender, "", new Host()), LocalDateTime.now(), subject, content);
+						messagesRepo.addMessage(msg);
+						response += msg.toString();
 						break;
 					case "GET_MESSAGES":
 						response = "MESSAGES!";
