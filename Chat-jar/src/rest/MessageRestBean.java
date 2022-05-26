@@ -4,6 +4,10 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Path;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+
 import chatmanager.ChatManagerRemote;
 import messagemanager.AgentMessage;
 import messagemanager.MessageManagerRemote;
@@ -20,28 +24,51 @@ public class MessageRestBean implements MessageRest{
 	private ChatManagerRemote chatManager;
 	
 	@Override
-	public void sendMessageToAll(Message message) {	
-		AgentMessage agentMessage = new AgentMessage();
+	public void sendMessageToAll(Message message) {		
 		
-		for (User loggedInUser : chatManager.loggedInUsers()) {
-			agentMessage.userArgs.put("receiver", loggedInUser.getUsername());
-			agentMessage.userArgs.put("sender", message.getSender().getUsername());
-			agentMessage.userArgs.put("subject", message.getSubject());
-			agentMessage.userArgs.put("content", message.getContent());	
-			agentMessage.userArgs.put("command", "MESSAGE");
-			messageManager.post(agentMessage);
+		for (User loggedInUser : chatManager.loggedInUsers()) {	
+			String hostAlias = chatManager.findByUsername(message.getReceiver().getUsername()).getHost().getAlias();
+			if(hostAlias.equals(System.getProperty("jboss.node.name") + ":8080")) {
+				AgentMessage agentMessage = new AgentMessage();
+				agentMessage.userArgs.put("receiver", loggedInUser.getUsername());
+				agentMessage.userArgs.put("sender", message.getSender().getUsername());
+				agentMessage.userArgs.put("subject", message.getSubject());
+				agentMessage.userArgs.put("content", message.getContent());	
+				agentMessage.userArgs.put("command", "MESSAGE");
+				messageManager.post(agentMessage);				
+			}
+			else {
+				System.out.println("Host " + hostAlias + " receives a message to distribute");
+				ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
+				ResteasyWebTarget rtarget = resteasyClient.target("http://" + hostAlias + "/Chat-war/api/messages");
+				MessageRest rest = rtarget.proxy(MessageRest.class);
+				rest.sendMessageToUser(message);
+				resteasyClient.close();
+			}
 		}
+		
 	}
 
 	@Override
 	public void sendMessageToUser(Message message) {
-		AgentMessage agentMessage = new AgentMessage();
-		agentMessage.userArgs.put("receiver", message.getReceiver().getUsername());
-		agentMessage.userArgs.put("sender", message.getSender().getUsername());
-		agentMessage.userArgs.put("subject", message.getSubject());
-		agentMessage.userArgs.put("content", message.getContent());	
-		agentMessage.userArgs.put("command", "MESSAGE");
-		messageManager.post(agentMessage);				
+		String hostAlias = chatManager.findByUsername(message.getReceiver().getUsername()).getHost().getAlias();
+		if(hostAlias.equals(System.getProperty("jboss.node.name") + ":8080")) {
+			AgentMessage agentMessage = new AgentMessage();
+			agentMessage.userArgs.put("receiver", message.getReceiver().getUsername());
+			agentMessage.userArgs.put("sender", message.getSender().getUsername());
+			agentMessage.userArgs.put("subject", message.getSubject());
+			agentMessage.userArgs.put("content", message.getContent());	
+			agentMessage.userArgs.put("command", "MESSAGE");
+			messageManager.post(agentMessage);				
+		}
+		else {
+			System.out.println("Host " + hostAlias + " receives a message to distribute");
+			ResteasyClient resteasyClient = new ResteasyClientBuilder().build();
+			ResteasyWebTarget rtarget = resteasyClient.target("http://" + hostAlias + "/Chat-war/api/messages");
+			MessageRest rest = rtarget.proxy(MessageRest.class);
+			rest.sendMessageToUser(message);
+			resteasyClient.close();
+		}
 	}
 
 

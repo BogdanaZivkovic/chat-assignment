@@ -177,7 +177,7 @@ public class ConnectionManagerBean implements ConnectionManager{
 		}
 	}
 	
-	@Schedule(hour = "*", minute="*", second="*/60")
+	@Schedule(hour = "*", minute="*", second="*/60", persistent=false)
 	private void heartbeat() {
 		System.out.println("Heartbeat protocol");
 		for(String cn : connectedNodes) {
