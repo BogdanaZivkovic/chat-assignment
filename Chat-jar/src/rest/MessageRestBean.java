@@ -27,7 +27,7 @@ public class MessageRestBean implements MessageRest{
 	public void sendMessageToAll(Message message) {		
 		
 		for (User loggedInUser : chatManager.loggedInUsers()) {	
-			String hostAlias = chatManager.findByUsername(message.getReceiver().getUsername()).getHost().getAlias();
+			String hostAlias = chatManager.findByUsername(loggedInUser.getUsername()).getHost().getAlias();
 			if(hostAlias.equals(System.getProperty("jboss.node.name") + ":8080")) {
 				AgentMessage agentMessage = new AgentMessage();
 				agentMessage.userArgs.put("receiver", loggedInUser.getUsername());
