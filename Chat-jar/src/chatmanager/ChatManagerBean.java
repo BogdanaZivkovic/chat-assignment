@@ -94,7 +94,7 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 			e.printStackTrace();
 		}	
 		
-		return new Host(hostAlias, hostAddress);
+		return new Host(hostAddress, hostAlias);
 	}
 
 	@Override
