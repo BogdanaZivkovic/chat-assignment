@@ -1,11 +1,20 @@
 package chatmanager;
 
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
+import models.Host;
 import models.User;
 
 // TODO Implement the rest of Client-Server functionalities 
@@ -18,6 +27,8 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 
 	private List<User> registered = new ArrayList<User>();
 	private List<User> loggedIn = new ArrayList<User>();
+	
+	
 	
 	public ChatManagerBean() {
 	}
@@ -40,6 +51,7 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 			return false;
 		}
 		else {
+			user.setHost(getUserHost());
 			loggedIn.add(user);
 			return true;
 		}
@@ -64,5 +76,20 @@ public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 			}
 		}
 		return false;
+	}
+	
+	private Host getUserHost() {
+		String hostAlias = System.getProperty("jboss.node.name") + ":8080";
+		String hostAddress = "";
+		
+		try {
+			MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+			ObjectName http = new ObjectName("jboss.as:socket-binding-group=standard-sockets,socket-binding=http");
+			hostAddress = (String) mBeanServer.getAttribute(http, "boundAddress");			
+		} catch (MalformedObjectNameException | InstanceNotFoundException | AttributeNotFoundException | ReflectionException | MBeanException e) {
+			e.printStackTrace();
+		}	
+		
+		return new Host(hostAlias, hostAddress);
 	}
 }

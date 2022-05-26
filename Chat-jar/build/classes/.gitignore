@@ -1,6 +1,4 @@
-/util/
 /connnectionmanager/
-/models/
-/agents/
-/chatmanager/
 /rest/
+/chatmanager/
+/models/

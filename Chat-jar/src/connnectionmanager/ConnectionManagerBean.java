@@ -58,7 +58,6 @@ public class ConnectionManagerBean implements ConnectionManager{
 			
 			localNode.setAddress(address);
 			localNode.setAlias(alias);
-			localNode.setMaster(master);
 			
 			System.out.println(("MASTER ADDR: " + master + ", node name: " + alias + ", node address: " + address));
 			if (master != null && !master.equals(":8080")) {
@@ -207,12 +206,5 @@ public class ConnectionManagerBean implements ConnectionManager{
 	
 	public String getNodeName() {
 		return localNode.getAlias();
-	}
-
-
-	@Override
-	public Host getHost() {
-		System.out.println(localNode.getAlias());
-		return localNode;
 	}
 }

@@ -7,15 +7,13 @@ public class Host implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String address;
 	private String alias;
-	private String master;
 	
 	public Host() { }
 	
-	public Host(String address, String alias, String master) {
+	public Host(String address, String alias) {
 		super();
 		this.address = address;
 		this.alias = alias;
-		this.master = master;
 	}
 
 	public String getAddress() {
@@ -32,15 +30,6 @@ public class Host implements Serializable {
 
 	public void setAlias(String alias) {
 		this.alias = alias;
-	}
-	
-
-	public String getMaster() {
-		return master;
-	}
-
-	public void setMaster(String master) {
-		this.master = master;
 	}
 
 	public static long getSerialversionuid() {
