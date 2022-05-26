@@ -48,19 +48,11 @@ export class UserService {
   }
 
   getLoggedInUsers() {
-    return this.http.get(baseUrl + "loggedIn").subscribe({
-      next: (loggedInUsers) => {
-        this.loggedInUsers = loggedInUsers as User[] 
-      }
-    })
+    return this.http.get(baseUrl + "loggedIn").subscribe()
   }
 
   getRegisteredUsers() {
-    return this.http.get(baseUrl + "registered").subscribe({
-      next: (registeredUsers) => {
-        this.registeredUsers = registeredUsers as User[] 
-      }
-    })
+    return this.http.get(baseUrl + "registered").subscribe()
   }
 }
 

@@ -204,4 +204,15 @@ public class ConnectionManagerBean implements ConnectionManager{
 		}
 		return nodeAlive;
 	}
+	
+	public String getNodeName() {
+		return localNode.getAlias();
+	}
+
+
+	@Override
+	public Host getHost() {
+		System.out.println(localNode.getAlias());
+		return localNode;
+	}
 }

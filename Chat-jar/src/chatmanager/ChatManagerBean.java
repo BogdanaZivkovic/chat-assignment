@@ -16,15 +16,9 @@ import models.User;
 @LocalBean
 public class ChatManagerBean implements ChatManagerRemote, ChatManagerLocal{
 
-	/**
-	 * 
-	 */
 	private List<User> registered = new ArrayList<User>();
 	private List<User> loggedIn = new ArrayList<User>();
 	
-	/**
-	 * Default constructor.
-	 */
 	public ChatManagerBean() {
 	}
 

@@ -12,6 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import models.Host;
 import models.User;
 
 public interface ConnectionManager {
@@ -44,4 +45,6 @@ public interface ConnectionManager {
 	@Path("/node")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String pingNode();
+
+	public Host getHost();
 }

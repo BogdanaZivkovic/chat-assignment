@@ -10,6 +10,16 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String username;
 	private String password;
+	private Host host;
+	
+	public User() {}
+
+	public User(String username, String password, Host host) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.host = host;
+	}
 
 	public String getUsername() {
 		return username;
@@ -26,18 +36,21 @@ public class User implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	public User(String username, String password) {
-		super();
-		this.username = username;
-		this.password = password;
+
+	public Host getHost() {
+		return host;
 	}
 
-	public User() {}
+	public void setHost(Host host) {
+		this.host = host;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
 	@Override
 	public String toString() {
 		return username + "," + password;
 	}
-
 }
