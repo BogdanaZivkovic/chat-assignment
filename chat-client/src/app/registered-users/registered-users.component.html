@@ -1,16 +1,11 @@
-<div class="container-fluid">
+<div class="container-fluid container-bg">
     <div class="row justify-content-center">
-        <div class="col-md-4">
-            <h1 style="text-align: center;">Registered users</h1>
+        <h1 style="text-align: center;">Registered users</h1>
+        <div class="col-md-2">
             <table matSort (matSortChange)="sortData($event)" class="table">
-                <thead>
-                    <tr>
-                        <th mat-sort-header="username">Username</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <tr *ngFor="let user of userService.registeredUsers">
-                        <td>{{user.username}}</td>
+                        <td font-size="20" text-align = "center">{{user.username}}</td>
                     </tr>
                 </tbody>
             </table>

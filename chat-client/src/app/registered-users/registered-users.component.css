@@ -1,0 +1,30 @@
+.container-bg {
+    background-color: rgb(91, 120, 160);
+    width:100%;
+    min-height: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+  }
+
+  h1 {
+    color: white;
+    font-weight: bold;
+  }
+  
+  .form-label {
+    color: white;
+  }
+
+  td {
+    background-color: #ffffff;
+    color: rgb(43, 62, 99);
+    border-radius: 20px;
+    padding: 5px;
+  }
+
+  table {
+    border-collapse:separate; 
+    border-spacing:10px;
+  }
+  
+
